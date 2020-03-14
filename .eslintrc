@@ -1,0 +1,17 @@
+{
+    "extends": "react-app",
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "jsx": true,
+        "useJSXTextNode": true,
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "jest": true,
+        "amd": true,
+        "node": true,
+        "es6": true
+    }
+}

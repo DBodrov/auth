@@ -1,0 +1,22 @@
+{
+    "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "svg"],
+    "moduleDirectories": ["node_modules"],
+    "rootDir": "../",
+    "setupFiles": [
+        "<rootDir>/config/jest.init.js"
+    ],
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+        "^packages/(.*)": "<rootDir>/packages/$1",
+        "^.+\\.(css|scss)$": "identity-obj-proxy",
+        "^@elements-ui/themes": "<rootDir>/packages/Themes/src",
+        "^@elements-ui/button/(.*)": "<rootDir>/packages/Button/src/$1",
+        "^@elements-ui/checkbox/(.*)": "<rootDir>/packages/Checkbox/src/$1"
+    },
+    "snapshotSerializers": ["jest-emotion"],
+    "verbose": true,
+    "transform": {
+        "^.+\\.(jsx?|tsx?)$": "babel-jest",
+        "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/config/jest.fileTransformer.js"
+    }
+}
