@@ -21,4 +21,5 @@ export const Form = styled.form`
     max-height: 450px;
     margin: auto;
     border: 1px #abb4bd solid;
+    padding: 0 0.5rem;
 `;

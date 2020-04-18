@@ -1,12 +1,12 @@
 import React from 'react';
+import {Input, Button} from 'neutrino-ui';
 import { Page, Form } from './styles';
 
 export function LoginPage() {
     const [userName, setUserName] = React.useState('');
     const [password, setPassword] = React.useState('');
 
-    const handleChangeField = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = event.target.value;
+    const handleChangeField = (value: string, event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.name === 'login') setUserName(value);
         if (event.target.name === 'password') setPassword(value);
     };
@@ -27,11 +27,11 @@ export function LoginPage() {
     return (
         <Page>
             <Form onSubmit={handleLogin}>
-                <input type="text" name="login" onChange={handleChangeField} autoComplete="off" />
-                <input type="password" name="password" onChange={handleChangeField} autoComplete="off" />
-                <button css={{ width: '150px', height: '2rem', color: '#fff', backgroundColor: '#339900' }}>
+                <Input type="text" name="login" onChangeHandler={handleChangeField} autoComplete="off" />
+                <Input type="password" name="password" onChangeHandler={handleChangeField} autoComplete="off" style={{margin: '1rem 0'}}/>
+                <Button type="submit" variant="primary">
                     Sign In
-                </button>
+                </Button>
             </Form>
         </Page>
     );
