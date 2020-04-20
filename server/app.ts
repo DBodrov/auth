@@ -2,20 +2,22 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import { Routes } from './routes/appRoutes';
+import {RegisterController} from './controllers/auth.controller';
+// import { Routes } from './routes/appRoutes';
 // import * as paths from '../config/paths';
 
 class App {
     public app: express.Application;
 
-    public appRoutes: Routes = new Routes();
+    // public appRoutes: Routes = new Routes();
 
-    constructor() {
+    constructor(controllers: any[]) {
         this.app = express();
         this.config();
         this.connectToDB();
         this.app.use(cors());
-        this.appRoutes.routes(this.app);
+        this.initControllers(controllers);
+        // this.appRoutes.routes(this.app);
         // this.app.use(express.static('./dist/client'));
     }
 
@@ -25,10 +27,22 @@ class App {
     }
 
     private connectToDB(): void {
-        mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+        mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true})
             .then(() => console.log('DB successfully connected...'))
             .catch((error) => console.error(error))
     }
+
+    initControllers(controllers: any[]): void {
+        controllers.forEach(controller => {
+            this.app.use('/', controller.router)
+        })
+    }
 }
 
-export default new App().app;
+function registerControllers() {
+    return [
+        new RegisterController()
+    ]
+}
+
+export default new App(registerControllers()).app;
