@@ -1,11 +1,16 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
-import {IUser} from './types';
+import { Document, Model, model, Schema } from 'mongoose';
+// import {IUser} from './types';
 
-const UserSchema = new mongoose.Schema({
+export interface IUser extends Document {
+    name: string;
+    email: string;
+    password: string;
+}
+
+const UserSchema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
     },
     email: {
         type: String,
@@ -14,8 +19,8 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
-    }
+        required: true,
+    },
 });
 
-export const UserModel = mongoose.model<IUser & mongoose.Document>('User', UserSchema);
+export const UserModel: Model<IUser> = model<IUser>('User', UserSchema);

@@ -16,7 +16,7 @@ export function LoginPage() {
     const handleRegister = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = { name, email, password };
-        fetch('/api/register', {
+        fetch('/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
