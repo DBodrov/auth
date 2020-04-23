@@ -3,32 +3,35 @@ import {Input, Button} from 'neutrino-ui';
 import { Page, Form } from './styles';
 
 export function LoginPage() {
-    const [userName, setUserName] = React.useState('');
+    const [name, setName] = React.useState('');
+    const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
     const handleChangeField = (value: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.name === 'login') setUserName(value);
+        if (event.target.name === 'name') setName(value);
+        if (event.target.name === 'email') setEmail(value);
         if (event.target.name === 'password') setPassword(value);
     };
 
-    const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleRegister = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = { userName, password };
-        fetch('/api/auth', {
+        const formData = { name, email, password };
+        fetch('/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(formData),
-            credentials: 'include'
+            // credentials: 'include'
         });
     };
 
     return (
         <Page>
-            <Form onSubmit={handleLogin}>
-                <Input type="text" name="login" onChangeHandler={handleChangeField} autoComplete="off" />
-                <Input type="password" name="password" onChangeHandler={handleChangeField} autoComplete="off" style={{margin: '1rem 0'}}/>
+            <Form onSubmit={handleRegister}>
+                <Input type="text" name="name" onChangeHandler={handleChangeField} autoComplete="off" value={name}/>
+                <Input type="email" name="email" onChangeHandler={handleChangeField} value={email} style={{margin: '1rem 0'}} />
+                <Input type="password" name="password" onChangeHandler={handleChangeField} value={password} autoComplete="off" />
                 <Button type="submit" variant="primary">
                     Sign In
                 </Button>

@@ -5,5 +5,5 @@
 export * from './http.service';
 export * from './dateTime.service';
 export * from './storage.service';
-export * from './auth.service';
+export * from '../auth/auth.service';
 // export * from './components.service';
