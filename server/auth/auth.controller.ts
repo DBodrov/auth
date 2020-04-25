@@ -18,7 +18,9 @@ export class AuthController {
         try {
             const loginData: LoginData = request['body'];
             const {cookie} = await new AuthService().signIn(loginData);
-            response.status(200).setHeader('Set-Cookie', [cookie]);
+            console.log('cookie', cookie);
+            response.setHeader('Set-Cookie', [cookie]);
+            response.status(200).send('Hello!')
         } catch (error) {
             console.log(error);
             next(error);

@@ -1,21 +1,24 @@
 import React from 'react';
+import {useHistory} from 'react-router-dom';
 import { Input, Button } from 'neutrino-ui';
 import { Page, Form } from './styles';
 
-export function LoginPage() {
-    // const [name, setName] = React.useState('');
+export function RegisterPage() {
+    const [name, setName] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const history = useHistory();
 
     const handleChangeField = (value: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.name === 'name') setName(value);
         if (event.target.name === 'email') setEmail(value);
         if (event.target.name === 'password') setPassword(value);
     };
 
-    const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = { email, password };
-        fetch('/api/auth/login', {
+        const formData = { name, email, password };
+        const fetchUser = () => fetch('/api/auth/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -23,16 +26,29 @@ export function LoginPage() {
             body: JSON.stringify(formData),
             // credentials: 'include'
         });
-    };
-    const handleGetMyProfile = (event: React.PointerEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        // const formData = { email, password };
-        fetch('/api/auth/users/me');
+        fetchUser().then(async response => {
+            const data = await response.json();
+            console.log(response);
+            if (response.ok) {
+                return data;
+            } else {
+                // TODO: ExceptionHandler
+                const {messsage, redirectUrl} = data;
+                history.push(redirectUrl);
+            }
+        })
     };
 
     return (
         <Page>
-            <Form onSubmit={handleLogin}>
+            <Form onSubmit={handleRegister}>
+                <Input
+                    type="text"
+                    name="name"
+                    onChangeHandler={handleChangeField}
+                    autoComplete="off"
+                    value={name}
+                />
                 <Input
                     type="email"
                     name="email"
@@ -47,11 +63,8 @@ export function LoginPage() {
                     value={password}
                     autoComplete="off"
                 />
-                <Button type="submit" variant="primary" css={{ marginTop: 10 }}>
-                    Sign In
-                </Button>
-                <Button type="button" onClick={handleGetMyProfile} variant="secondary" css={{ marginTop: 10 }}>
-                    My Profile
+                <Button type="submit" variant="primary">
+                    Sign Up
                 </Button>
             </Form>
         </Page>

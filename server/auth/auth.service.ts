@@ -15,7 +15,7 @@ export class AuthService {
     public async register(userData: UserData) {
         const currentUser = await UserModel.findOne({ email: userData.email });
         if (currentUser) {
-            throw new HttpException(400, `${userData.email} already used...`);
+            throw new HttpException(400, `${userData.email} already used...`, '/login');
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const user = await UserModel.create({
@@ -42,10 +42,10 @@ export class AuthService {
                     cookie,
                 };
             } else {
-                throw new Error('Invalid password');
+                throw new HttpException(400, 'Invalid password');
             }
         } else {
-            throw new Error(`User with email: ${loginData.email} not found`);
+            throw new HttpException(400, `User with email: ${loginData.email} not found`);
         }
     }
 

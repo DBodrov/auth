@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { DB_URL } from './util/secrets';
@@ -11,16 +12,20 @@ class Server {
 
     constructor() {
         this.app = express();
+
+        this.initializeMiddlewares();
         this.config();
         this.connectToDB();
         this.initRoutes();
         this.initErrorMiddleware();
-        this.app.disable('x-powered-by');
+    }
+
+    private initializeMiddlewares() {
+        this.app.use(bodyParser.json());
+        this.app.use(cookieParser());
     }
 
     private config(): void {
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors());
         // this.app.use(errorMiddleware);
         this.app.set('port', process.env.PORT || 3000);
