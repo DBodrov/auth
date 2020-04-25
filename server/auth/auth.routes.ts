@@ -12,6 +12,7 @@ export class AuthRoutes {
     }
 
     createAuthRoutes(): void {
-        this.router.post('/register', this.authController.register)
+        this.router.post('/register', this.authController.register);
+        this.router.post('/login', this.authController.signIn);
     }
 }

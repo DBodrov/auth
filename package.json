@@ -68,6 +68,7 @@
         "eslint-plugin-react-hooks": "^3.0.0",
         "file-loader": "^6.0.0",
         "html-webpack-plugin": "^4.2.0",
+        "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.9.10",
         "prettier": "^2.0.5",
         "raw-loader": "^4.0.1",
