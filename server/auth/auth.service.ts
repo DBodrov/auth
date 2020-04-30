@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models';
+import {JWT_REFRESH_SECRET, JWT_SECRET} from '../util/secrets';
 import { HttpException } from '../exceptions/HttpException';
 import { decodeToken } from './auth.utils';
 
@@ -24,8 +25,8 @@ export class AuthService {
             password: hashedPassword,
         });
         const newUser = { name: user.name, email: user.email };
-        const token = this.createToken(user);
-        const refreshToken = this.createRefreshToken(user);
+        const token = this.createToken(user._id, 'access');
+        const refreshToken = this.createToken(user._id, 'refresh');
         const cookie = this.createCookie(refreshToken);
         return {
             cookie,
@@ -39,8 +40,8 @@ export class AuthService {
         if (user) {
             const isSamePassword = await bcrypt.compare(loginData.password, user.get('password'));
             if (isSamePassword) {
-                const token = this.createToken(user);
-                const refreshToken = this.createRefreshToken(user);
+                const token = this.createToken(user._id, 'access');
+                const refreshToken = this.createToken(user._id, 'refresh');
                 const cookie = this.createCookie(refreshToken);
                 return {
                     cookie,
@@ -56,23 +57,13 @@ export class AuthService {
 
     public getAccessToken(refreshToken: string) {
         const decryptedValue = decodeToken(refreshToken);
-        const accessTokenData = this.createToken((decryptedValue as any)._id);
+        const accessTokenData = this.createToken((decryptedValue as any)._id, 'access');
         return accessTokenData;
     }
 
-    private createRefreshToken(userId: IUser['_id']): TokenData {
-        const expiresIn = 3600; // an hour
-        const secret = process.env.JWT_REFRESH_SECRET;
-
-        return {
-            expiresIn,
-            token: jwt.sign({ _id: userId }, secret, { expiresIn }),
-        };
-    }
-
-    private createToken(userId: IUser['_id']): TokenData {
-        const expiresIn = 600; // 10 min
-        const secret = process.env.JWT_SECRET;
+    private createToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): TokenData {
+        const expiresIn = tokenType === 'access' ? 600 : 3600; // 10 min
+        const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
 
         return {
             expiresIn,
