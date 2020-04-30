@@ -12,9 +12,10 @@ export async function authMiddleware(request: Request, response: Response, next:
             throw new HttpException(401, 'You are not authenticate');
         }
 
-        const decoded: any = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log(decoded);
 
-        const user: IUser = await UserModel.findOne({ _id: decoded._id });
+        const user: IUser = await UserModel.findOne({ _id: (decoded as any)._id });
 
         if (!user) {
             throw new HttpException(401, 'User not found');

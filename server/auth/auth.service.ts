@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { UserModel, IUser } from '../models';
 import { HttpException } from '../exceptions/HttpException';
+import { decodeToken } from './auth.utils';
 
 interface TokenData {
     token: string;
@@ -23,10 +24,12 @@ export class AuthService {
             password: hashedPassword,
         });
         const newUser = { name: user.name, email: user.email };
-        const tokenData = this.createToken(user);
-        const cookie = this.createCookie(tokenData);
+        const token = this.createToken(user);
+        const refreshToken = this.createRefreshToken(user);
+        const cookie = this.createCookie(refreshToken);
         return {
             cookie,
+            token,
             user: newUser,
         };
     }
@@ -36,10 +39,12 @@ export class AuthService {
         if (user) {
             const isSamePassword = await bcrypt.compare(loginData.password, user.get('password'));
             if (isSamePassword) {
-                const tokenData = this.createToken(user);
-                const cookie = this.createCookie(tokenData);
+                const token = this.createToken(user);
+                const refreshToken = this.createRefreshToken(user);
+                const cookie = this.createCookie(refreshToken);
                 return {
                     cookie,
+                    token,
                 };
             } else {
                 throw new HttpException(400, 'Invalid password');
@@ -49,13 +54,29 @@ export class AuthService {
         }
     }
 
-    private createToken(user: IUser): TokenData {
-        const expiresIn = 60 * 60; // an hour
+    public getAccessToken(refreshToken: string) {
+        const decryptedValue = decodeToken(refreshToken);
+        const accessTokenData = this.createToken((decryptedValue as any)._id);
+        return accessTokenData;
+    }
+
+    private createRefreshToken(userId: IUser['_id']): TokenData {
+        const expiresIn = 3600; // an hour
+        const secret = process.env.JWT_REFRESH_SECRET;
+
+        return {
+            expiresIn,
+            token: jwt.sign({ _id: userId }, secret, { expiresIn }),
+        };
+    }
+
+    private createToken(userId: IUser['_id']): TokenData {
+        const expiresIn = 600; // 10 min
         const secret = process.env.JWT_SECRET;
 
         return {
             expiresIn,
-            token: jwt.sign({ _id: user._id }, secret, { expiresIn }),
+            token: jwt.sign({ _id: userId }, secret, { expiresIn }),
         };
     }
 

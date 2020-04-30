@@ -1,7 +1,7 @@
 import React from 'react';
 import {useHistory} from 'react-router-dom';
 import { Input, Button } from 'neutrino-ui';
-import { Page, Form } from './styles';
+import { Page, Form } from '../common';
 
 export function RegisterPage() {
     const [name, setName] = React.useState('');
