@@ -1,32 +1,33 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { DB_URL } from './util/secrets';
-import {AuthRoutes} from './auth/auth.routes';
-// import { AuthController } from './auth/auth.controller';
-// import { Routes } from './routes/appRoutes';
-// import * as paths from '../config/paths';
+import { AuthRoutes } from './auth/auth.routes';
+import { errorMiddleware } from './middleware/error.middleware';
 
 class Server {
     public app: express.Application;
 
-    // public appRoutes: Routes = new Routes();
-
     constructor() {
         this.app = express();
+
+        this.initializeMiddlewares();
         this.config();
         this.connectToDB();
         this.initRoutes();
-        // this.initControllers(controllers);
-        // this.appRoutes.routes(this.app);
-        // this.app.use(express.static('./dist/client'));
+        this.initErrorMiddleware();
+    }
+
+    private initializeMiddlewares() {
+        this.app.use(bodyParser.json());
+        this.app.use(cookieParser());
     }
 
     private config(): void {
-        this.app.use(bodyParser.json());
-        this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors());
+        // this.app.use(errorMiddleware);
         this.app.set('port', process.env.PORT || 3000);
     }
 
@@ -50,9 +51,13 @@ class Server {
     }
 
     public initRoutes(): void {
-        this.app.use("/api/auth", new AuthRoutes().router);
+        this.app.use('/api/auth', new AuthRoutes().router);
         // this.app.use("/api/products", new ProductRoutes().router);
-      }
+    }
+
+    private initErrorMiddleware(): void {
+        this.app.use(errorMiddleware);
+    }
 
     // initControllers(controllers: any[]): void {
     //     controllers.forEach((controller) => {
@@ -69,14 +74,6 @@ class Server {
         this.app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     }
 }
-
-// function registerControllers() {
-//     return [
-//         new AuthController()
-//     ]
-// }
-
-// export default new App(registerControllers()).app;
 
 const server = new Server();
 

@@ -13,3 +13,10 @@ if (!JWT_SECRET) {
     console.log("No JWT secret string. Set JWT_SECRET environment variable.");
     process.exit(1);
 }
+
+export const JWT_REFRESH_SECRET = process.env["JWT_REFRESH_SECRET"];
+
+if (!JWT_REFRESH_SECRET) {
+    console.log("No JWT REFRESH secret string. Set JWT_REFRESH_SECRET environment variable.");
+    process.exit(1);
+}

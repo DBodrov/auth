@@ -1,40 +1,30 @@
-import { Request } from 'express';
-import bcrypt from 'bcrypt';
-import { Types } from 'mongoose';
-import { UserModel, IUser } from '../models';
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { IUser, UserModel } from '../models';
+import { HttpException } from '../exceptions/HttpException';
+import { JWT_SECRET } from '../util/secrets';
 
-type User = {
-    _id: Types.ObjectId;
-} & IUser;
-
-interface TokenData {
-    token: string;
-    expiresIn: number;
-}
-
-export class AuthMiddleWare {
-    private user = UserModel;
-
-    public async register(req: Request) {
-        const userData: IUser = req['body'];
-        const alreadyRegistered = this.user.findOne({ email: userData.email });
-        if (alreadyRegistered) {
-            throw new Error(`${userData.email} already used...`);
+export async function authMiddleware(request: Request, response: Response, next: NextFunction) {
+    console.log(request['cookies'], request['headers']);
+    try {
+        const token = request['cookies']?.Authorization;
+        if (!token) {
+            throw new HttpException(401, 'You are not authenticate');
         }
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        const user = await this.user.create({
-            ...userData,
-            password: hashedPassword,
-        });
-    }
 
-    public createToken(user: User): TokenData {
-        const expiresIn = 60 * 60; // an hour
-        const secret = process.env.JWT_SECRET;
+        const decoded = jwt.verify(token, JWT_SECRET);
+        console.log(decoded);
 
-        return {
-            expiresIn,
-            token: jwt.sign(dataStoredInToken, secret, { expiresIn }),
-        };
+        const user: IUser = await UserModel.findOne({ _id: (decoded as any)._id });
+
+        if (!user) {
+            throw new HttpException(401, 'User not found');
+        }
+        request['token'] = token;
+        request['user'] = user;
+        next();
+
+    } catch (error) {
+        next(error);
     }
 }

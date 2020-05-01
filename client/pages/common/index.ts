@@ -7,6 +7,10 @@ export const Page = styled.div`
     align-items: center;
     width: 100%;
     height: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-left: 1px ${({theme}: {theme: any}) => theme.colors.pageElementsColors.border} solid;
+    border-right: 1px ${({theme}: {theme: any}) => theme.colors.pageElementsColors.border} solid;
 `;
 
 export const Form = styled.form`
