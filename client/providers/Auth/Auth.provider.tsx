@@ -18,7 +18,7 @@ interface IAuthContext {
 
 const AuthContext = createContext<IAuthContext>(undefined);
 
-export function AuthProveder(props: any) {
+export function AuthProvider(props: any) {
     const { run, data, error, isError, isIdle, isLoading, isSuccess } = useAuth();
 
     const tokenData: TokenData = data?.token;
@@ -29,7 +29,13 @@ export function AuthProveder(props: any) {
         }
     }, [run, tokenData]);
 
-    const value = useMemo(() => ({}), [])
+    const value = useMemo(() => ({ ...data }), [data]);
 
-    return <AuthContext.Provider value={value} {...props}/>;
+    if (isIdle || isLoading) {
+        return <span>Loading...</span>;
+    }
+
+    if (isError) return <div role="alert">{error.message}</div>;
+
+    return <AuthContext.Provider value={value} {...props} />;
 }

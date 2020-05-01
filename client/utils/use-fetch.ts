@@ -24,7 +24,7 @@ function useAbortController() {
 export function useFetch() {
     const getSignal = useAbortController();
 
-    const fetchClient = useCallback(async (endpoint: string, fetchConfig?: RequestInit) => {
+    const fetchClient = useCallback(async (endpoint: string, fetchConfig: RequestInit = {}) => {
         const { body, ...customConfig } = fetchConfig;
         const config: RequestInit = {
             method: body ? 'POST' : 'GET',

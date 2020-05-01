@@ -21,6 +21,7 @@ export function useAuth() {
                 return data;
             },
             (error) => {
+                console.log(error)
                 dispatch({ status: 'rejected', error });
                 return error;
             }
