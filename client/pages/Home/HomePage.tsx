@@ -1,14 +1,13 @@
-import React from 'react';
-import {useHistory} from 'react-router-dom';
+import React, {useState} from 'react';
 import {Button} from 'neutrino-ui';
 import {Page} from '../common'
 
 export function HomePage() {
-    const history = useHistory();
+    const [formType, setForm] = useState(null);
 
     const handleRedirect = (e: React.PointerEvent<HTMLButtonElement>) => {
         const name = e.currentTarget.name;
-        history.push(`/${name}`);
+        setForm(name);
     }
     return (
         <Page>

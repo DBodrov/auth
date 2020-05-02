@@ -1,5 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import { useFetch } from '../../utils/use-fetch';
+import {TokenData} from './types';
 
 const AUTH_API = '/api/auth';
 
@@ -10,7 +11,18 @@ type AuthState = {
     error?: any;
 };
 
-export function useAuth() {
+const tokenValidation = (tokenData: TokenData): boolean => {
+    if (tokenData) {
+
+        const now = new Date();
+        const tokenExpires = tokenData.expiresIn;
+        console.log('Date now =', now, 'Token expiration = ', new Date(tokenExpires));
+        return now.valueOf() < tokenExpires;
+    }
+    return false;
+}
+
+export function useAuthClient() {
     const fetchClient = useFetch();
     const [{status, data, error}, dispatch] = useReducer((s: AuthState, a: AuthState) => ({ ...s, ...a }), initialState);
     const run = useCallback(() => {
@@ -18,6 +30,7 @@ export function useAuth() {
         fetchClient(`${AUTH_API}/token`).then(
             (data) => {
                 dispatch({ status: 'resolved', data });
+                console.log('fetch', data)
                 return data;
             },
             (error) => {
@@ -32,10 +45,11 @@ export function useAuth() {
         run,
         data,
         error,
-
+        tokenIsValid: tokenValidation(data?.tokenData),
         isIdle: status === 'idle',
         isLoading: status === 'pending',
         isSuccess: status === 'resolved',
-        isError: status === 'rejected'
+        isError: status === 'rejected',
+        isUnAuthenticated: error?.status === 401,
     }
 }

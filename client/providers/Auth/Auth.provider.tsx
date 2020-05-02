@@ -1,25 +1,21 @@
 import React, { createContext, useContext, useLayoutEffect, useMemo } from 'react';
-import { useAuth } from './use-auth';
-
-type TokenData = {
-    token: string;
-    expiresIn: Date;
-};
-
-type UserData = {
-    name: string;
-    email: string;
-};
-
-interface IAuthContext {
-    tokenData: TokenData;
-    userData: UserData;
-}
+import { useAuthClient } from './use-authClient';
+import { TokenData, IAuthContext } from './types';
 
 const AuthContext = createContext<IAuthContext>(undefined);
 
 export function AuthProvider(props: any) {
-    const { run, data, error, isError, isIdle, isLoading, isSuccess } = useAuth();
+    const {
+        run,
+        data,
+        error,
+        isError,
+        isIdle,
+        isLoading,
+        isSuccess,
+        isUnAuthenticated,
+        tokenIsValid,
+    } = useAuthClient();
 
     const tokenData: TokenData = data?.token;
 
@@ -29,13 +25,21 @@ export function AuthProvider(props: any) {
         }
     }, [run, tokenData]);
 
-    const value = useMemo(() => ({ ...data }), [data]);
+    const value = useMemo(() => ({ ...data, tokenIsValid }), [data, tokenIsValid]);
 
     if (isIdle || isLoading) {
         return <span>Loading...</span>;
     }
 
-    if (isError) return <div role="alert">{error.message}</div>;
+    if (isSuccess || isUnAuthenticated) return <AuthContext.Provider value={value} {...props} />;
 
-    return <AuthContext.Provider value={value} {...props} />;
+    if (isError) return <div>{error.message}</div>;
 }
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within a AuthProvider');
+    }
+    return context;
+};

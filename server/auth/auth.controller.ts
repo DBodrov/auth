@@ -36,7 +36,7 @@ export class AuthController {
                 throw new HttpException(401, 'Please authenticate');
             }
             const token = new AuthService().getAccessToken(refreshToken);
-            return token;
+            response.status(200).send({tokenData: token});
         } catch (error) {
             next(error);
         }

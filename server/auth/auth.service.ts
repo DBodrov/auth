@@ -62,7 +62,8 @@ export class AuthService {
     }
 
     private createToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): TokenData {
-        const expiresIn = tokenType === 'access' ? 600 : 3600; // 10 min
+        const date = new Date();
+        const expiresIn = tokenType === 'access' ? date.setMinutes(date.getMinutes() + 10) : date.setHours(date.getHours() + 1);
         const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
 
         return {

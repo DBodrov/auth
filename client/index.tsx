@@ -1,7 +1,14 @@
 import React from 'react';
-import {render} from 'react-dom';
-import {App} from './App';
+import { render } from 'react-dom';
+import { Global } from '@emotion/core';
+import { AppProviders } from './providers/AppProviders';
+import { App } from './App';
+import { globalStyles } from './styles';
 
 render(
-    <App />, document.getElementById('root')
-)
+    <AppProviders>
+        <Global styles={globalStyles} />
+        <App />
+    </AppProviders>,
+    document.getElementById('root')
+);
