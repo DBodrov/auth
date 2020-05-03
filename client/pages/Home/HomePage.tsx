@@ -1,14 +1,33 @@
-import React, {useState} from 'react';
-import {Button} from 'neutrino-ui';
+import React, {useState, useReducer} from 'react';
+import {Button, Modal} from 'neutrino-ui';
 import {Page} from '../common'
+import {LoginForm} from './LoginForm';
+
+const initFormState = {
+    login: false,
+    registration: false,
+};
+
+function RegistrationForm({isOpen, onDismiss}: {isOpen: boolean, onDismiss: (formName: string) => void}) {
+    const handleDismissForm = () => {
+        onDismiss('registration');
+    }
+    return <Modal showClose escClose isOpen={isOpen} onClose={handleDismissForm}>
+        Registration Form
+    </Modal>
+}
 
 export function HomePage() {
-    const [formType, setForm] = useState(null);
+    // const [formType, setForm] = useState<string>(null);
+    const [state, setState] = useReducer((s: any, a: any) => ({...s, ...a}), initFormState)
 
     const handleRedirect = (e: React.PointerEvent<HTMLButtonElement>) => {
         const name = e.currentTarget.name;
-        setForm(name);
+        setState({[name]: true});
     }
+
+    const handleDismissForm = (formName: string) => setState({[formName]: false});
+
     return (
         <Page>
             <div css={{display: 'flex', flexFlow: 'row nowrap', width: '50%', justifyContent: 'space-around'}}>
@@ -19,6 +38,8 @@ export function HomePage() {
                     Registration
                 </Button>
             </div>
+            <LoginForm isOpen={state.login} onDismiss={handleDismissForm} />
+            <RegistrationForm isOpen={state.registration} onDismiss={handleDismissForm} />
         </Page>
     )
 }

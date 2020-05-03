@@ -12,4 +12,5 @@ export interface IAuthContext {
     tokenData: TokenData;
     tokenIsValid: boolean;
     userData: UserData;
+    login: (userData: UserData) => void;
 }

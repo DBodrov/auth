@@ -1,6 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import { useFetch } from '../../utils/use-fetch';
-import {TokenData} from './types';
+import { TokenData, UserData } from './types';
 
 const AUTH_API = '/api/auth';
 
@@ -13,36 +13,56 @@ type AuthState = {
 
 const tokenValidation = (tokenData: TokenData): boolean => {
     if (tokenData) {
-
         const now = new Date();
         const tokenExpires = tokenData.expiresIn;
         console.log('Date now =', now, 'Token expiration = ', new Date(tokenExpires));
         return now.valueOf() < tokenExpires;
     }
     return false;
-}
+};
 
 export function useAuthClient() {
     const fetchClient = useFetch();
-    const [{status, data, error}, dispatch] = useReducer((s: AuthState, a: AuthState) => ({ ...s, ...a }), initialState);
+    const [{ status, data, error }, dispatch] = useReducer(
+        (s: AuthState, a: AuthState) => ({ ...s, ...a }),
+        initialState
+    );
     const run = useCallback(() => {
         dispatch({ status: 'pending' });
         fetchClient(`${AUTH_API}/token`).then(
             (data) => {
                 dispatch({ status: 'resolved', data });
-                console.log('fetch', data)
+                console.log('fetch', data);
                 return data;
             },
             (error) => {
-                console.log(error)
+                console.log(error);
                 dispatch({ status: 'rejected', error });
                 return error;
             }
         );
     }, [fetchClient]);
 
+    const login = useCallback(
+        (userData: UserData) => {
+            dispatch({ status: 'pending' });
+            fetchClient(`${AUTH_API}/login`, { body: {...userData } }).then(
+                (data) => {
+                    dispatch({ status: 'resolved', data });
+                    return data;
+                },
+                (error) => {
+                    dispatch({ status: 'rejected', error });
+                    return error;
+                }
+            );
+        },
+        [fetchClient]
+    );
+
     return {
         run,
+        login,
         data,
         error,
         tokenIsValid: tokenValidation(data?.tokenData),
@@ -51,5 +71,5 @@ export function useAuthClient() {
         isSuccess: status === 'resolved',
         isError: status === 'rejected',
         isUnAuthenticated: error?.status === 401,
-    }
+    };
 }

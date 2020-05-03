@@ -7,6 +7,7 @@ const AuthContext = createContext<IAuthContext>(undefined);
 export function AuthProvider(props: any) {
     const {
         run,
+        login,
         data,
         error,
         isError,
@@ -25,7 +26,7 @@ export function AuthProvider(props: any) {
         }
     }, [run, tokenData]);
 
-    const value = useMemo(() => ({ ...data, tokenIsValid }), [data, tokenIsValid]);
+    const value = useMemo(() => ({ ...data, tokenIsValid, login }), [data, login, tokenIsValid]);
 
     if (isIdle || isLoading) {
         return <span>Loading...</span>;
