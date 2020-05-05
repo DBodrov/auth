@@ -6,11 +6,16 @@ export type TokenData = {
 export type UserData = {
     name: string;
     email: string;
-};
+}
+
+export type LoginData = {
+    email: string;
+    password: string;
+}
 
 export interface IAuthContext {
     tokenData: TokenData;
     tokenIsValid: boolean;
     userData: UserData;
-    login: (userData: UserData) => void;
+    login: (loginData: LoginData) => void;
 }

@@ -8,14 +8,10 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
         alias: {
-            '@elements-ui/themes': resolveApp('packages/Themes/src'),
-            '@elements-ui/button': resolveApp('packages/Button/src'),
-            '@elements-ui/checkbox': resolveApp('packages/Checkbox/src'),
-            '@elements-ui/typography': resolveApp('packages/Typography/src'),
-            '@elements-ui/input': resolveApp('packages/Input/src'),
-            '@elements-ui/maskinput': resolveApp('packages/MaskInput/src'),
-            '@elements-ui/react': resolveApp('packages/react/src'),
-            '@elements-ui/utils': resolveApp('packages/utils/src'),
+            client: resolveApp('client'),
+            utils: resolveApp('client/utils'),
+            pages: resolveApp('client/pages'),
+            providers: resolveApp('client/providers'),
         },
     },
 

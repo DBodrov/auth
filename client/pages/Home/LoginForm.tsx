@@ -21,14 +21,7 @@ export function LoginForm({isOpen, onDismiss}: {isOpen: boolean, onDismiss: (for
     const handleLogin = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = { email, password };
-        fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-            // credentials: 'include'
-        });
+        login(formData);
     };
     const handleDismissForm = () => {
         onDismiss('login');

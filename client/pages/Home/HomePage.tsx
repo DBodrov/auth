@@ -1,4 +1,4 @@
-import React, {useState, useReducer} from 'react';
+import React, {useReducer} from 'react';
 import {Button, Modal} from 'neutrino-ui';
 import {Page} from '../common'
 import {LoginForm} from './LoginForm';
@@ -18,7 +18,6 @@ function RegistrationForm({isOpen, onDismiss}: {isOpen: boolean, onDismiss: (for
 }
 
 export function HomePage() {
-    // const [formType, setForm] = useState<string>(null);
     const [state, setState] = useReducer((s: any, a: any) => ({...s, ...a}), initFormState)
 
     const handleRedirect = (e: React.PointerEvent<HTMLButtonElement>) => {
