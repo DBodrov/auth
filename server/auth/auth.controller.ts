@@ -6,10 +6,10 @@ export class AuthController {
     public register = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const userData: UserData = request['body'];
-            const { user, cookie, token } = await new AuthService().register(userData);
+            const { cookie, token } = await new AuthService().register(userData);
 
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({user, tokenData: token});
+            response.status(200).send({tokenData: token});
         } catch (error) {
             console.log(error);
             next(error);
@@ -19,10 +19,10 @@ export class AuthController {
     public async signIn(request: Request, response: Response, next: NextFunction) {
         try {
             const loginData: LoginData = request['body'];
-            const {cookie, token, user} = await new AuthService().signIn(loginData);
+            const {cookie, token} = await new AuthService().signIn(loginData);
             console.log('cookie', cookie);
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({tokenData: token, user});
+            response.status(200).send({tokenData: token});
         } catch (error) {
             console.log(error);
             next(error);

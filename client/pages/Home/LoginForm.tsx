@@ -8,7 +8,7 @@ interface ILoginFormProps {
     onDismiss: (formName: string) => void;
 }
 
-export function LoginForm({isOpen, onDismiss}: {isOpen: boolean, onDismiss: (formName: string) => void}) {
+export function LoginForm({isOpen, onDismiss}: ILoginFormProps) {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
     const {login} = useAuth();

@@ -13,9 +13,12 @@ export type LoginData = {
     password: string;
 }
 
+export type RegistrationData = UserData & LoginData;
+
 export interface IAuthContext {
     tokenData: TokenData;
     tokenIsValid: boolean;
     userData: UserData;
     login: (loginData: LoginData) => void;
+    register: (registrationData: RegistrationData) => void;
 }

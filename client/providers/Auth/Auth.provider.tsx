@@ -8,6 +8,7 @@ export function AuthProvider(props: any) {
     const {
         run,
         login,
+        register,
         data,
         error,
         isError,
@@ -26,7 +27,7 @@ export function AuthProvider(props: any) {
         }
     }, [run, tokenData]);
 
-    const value = useMemo(() => ({ ...data, tokenIsValid, login }), [data, login, tokenIsValid]);
+    const value = useMemo(() => ({ ...data, tokenIsValid, login, register }), [data, login, register, tokenIsValid]);
 
     if (isIdle || isLoading) {
         return <span>Loading...</span>;
