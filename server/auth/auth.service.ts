@@ -24,14 +24,13 @@ export class AuthService {
             ...userData,
             password: hashedPassword,
         });
-        const newUser = { name: user.name, email: user.email };
+
         const token = this.createToken(user._id, 'access');
         const refreshToken = this.createToken(user._id, 'refresh');
         const cookie = this.createCookie(refreshToken);
         return {
             cookie,
             token,
-            user: newUser,
         };
     }
 
@@ -43,11 +42,9 @@ export class AuthService {
                 const token = this.createToken(user._id, 'access');
                 const refreshToken = this.createToken(user._id, 'refresh');
                 const cookie = this.createCookie(refreshToken);
-                const userData = {name: user.name, email: user.email}
                 return {
                     cookie,
                     token,
-                    user: userData
                 };
             } else {
                 throw new HttpException(400, 'Invalid password');

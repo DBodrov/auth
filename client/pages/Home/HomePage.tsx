@@ -1,35 +1,38 @@
-import React, {useReducer} from 'react';
-import {Button, Modal} from 'neutrino-ui';
-import {Page} from '../common'
-import {LoginForm} from './LoginForm';
+import React, { useReducer, useCallback } from 'react';
+import { Button } from 'neutrino-ui';
+import { useAuth } from 'providers/Auth';
+import { Page } from '../common';
+import { SignInUpForm } from './SignInUpForm';
 
 const initFormState = {
-    login: false,
-    registration: false,
+    isOpen: false,
+    form: '',
 };
 
-function RegistrationForm({isOpen, onDismiss}: {isOpen: boolean, onDismiss: (formName: string) => void}) {
-    const handleDismissForm = () => {
-        onDismiss('registration');
-    }
-    return <Modal showClose escClose isOpen={isOpen} onClose={handleDismissForm}>
-        Registration Form
-    </Modal>
-}
-
 export function HomePage() {
-    const [state, setState] = useReducer((s: any, a: any) => ({...s, ...a}), initFormState)
+    const { login, register } = useAuth();
+    const [state, setState] = useReducer((s: any, a: any) => ({ ...s, ...a }), initFormState);
 
-    const handleRedirect = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const handleRedirect = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
         const name = e.currentTarget.name;
-        setState({[name]: true});
-    }
+        setState({ isOpen: true, form: name });
+    }, []);
 
-    const handleDismissForm = (formName: string) => setState({[formName]: false});
+    const handleDismissForm = useCallback(() => setState({ isOpen: false, form: '' }), []);
+    const handleFetchUserData = useCallback((formData: any, formType: string) => {
+        const fetcher = formType === 'login' ? login : register;
+        fetcher(formData);
+    }, [login, register]);
 
     return (
         <Page>
-            <div css={{display: 'flex', flexFlow: 'row nowrap', width: '50%', justifyContent: 'space-around'}}>
+            <div
+                css={{
+                    display: 'flex',
+                    flexFlow: 'row nowrap',
+                    width: '50%',
+                    justifyContent: 'space-around',
+                }}>
                 <Button name="login" type="button" variant="primary" onClick={handleRedirect}>
                     Login
                 </Button>
@@ -37,8 +40,12 @@ export function HomePage() {
                     Registration
                 </Button>
             </div>
-            <LoginForm isOpen={state.login} onDismiss={handleDismissForm} />
-            <RegistrationForm isOpen={state.registration} onDismiss={handleDismissForm} />
+            <SignInUpForm
+                formType={state.form}
+                isOpen={state.isOpen}
+                onDismiss={handleDismissForm}
+                onSubmit={handleFetchUserData}
+            />
         </Page>
-    )
+    );
 }

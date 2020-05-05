@@ -1,6 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import { useFetch } from 'utils';
-import { TokenData, LoginData } from './types';
+import { TokenData, LoginData, RegistrationData } from './types';
 
 const AUTH_API = '/api/auth';
 
@@ -61,9 +61,28 @@ export function useAuthClient() {
         [fetchClient]
     );
 
+    const register = useCallback(
+        (registrationData: RegistrationData) => {
+            dispatch({ status: 'pending' });
+            fetchClient(`${AUTH_API}/register`, { body: registrationData }).then(
+                (data) => {
+                    console.log('registration success', data)
+                    dispatch({ status: 'resolved', data });
+                    return data;
+                },
+                (error) => {
+                    dispatch({ status: 'rejected', error });
+                    return error;
+                }
+            );
+        },
+        [fetchClient]
+    );
+
     return {
         run,
         login,
+        register,
         data,
         error,
         tokenIsValid: tokenValidation(data?.tokenData),
