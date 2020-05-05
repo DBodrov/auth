@@ -18,13 +18,14 @@ function useAbortController() {
     return getSignal;
 }
 
-// in an effect
-// fetch('/url_api', {signal: getSignal()})
+interface IFetchRequestConfig extends RequestInit {
+    body?: any;
+}
 
 export function useFetch() {
     const getSignal = useAbortController();
 
-    const fetchClient = useCallback(async (endpoint: string, fetchConfig: RequestInit = {}) => {
+    const fetchClient = useCallback(async (endpoint: string, fetchConfig: IFetchRequestConfig = {}) => {
         const { body, ...customConfig } = fetchConfig;
         const config: RequestInit = {
             method: body ? 'POST' : 'GET',

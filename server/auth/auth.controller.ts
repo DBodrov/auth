@@ -9,7 +9,7 @@ export class AuthController {
             const { user, cookie, token } = await new AuthService().register(userData);
 
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({user, token});
+            response.status(200).send({user, tokenData: token});
         } catch (error) {
             console.log(error);
             next(error);
@@ -19,10 +19,10 @@ export class AuthController {
     public async signIn(request: Request, response: Response, next: NextFunction) {
         try {
             const loginData: LoginData = request['body'];
-            const {cookie, token} = await new AuthService().signIn(loginData);
+            const {cookie, token, user} = await new AuthService().signIn(loginData);
             console.log('cookie', cookie);
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({token});
+            response.status(200).send({tokenData: token, user});
         } catch (error) {
             console.log(error);
             next(error);
@@ -36,7 +36,7 @@ export class AuthController {
                 throw new HttpException(401, 'Please authenticate');
             }
             const token = new AuthService().getAccessToken(refreshToken);
-            return token;
+            response.status(200).send({tokenData: token});
         } catch (error) {
             next(error);
         }

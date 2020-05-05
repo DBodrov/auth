@@ -43,9 +43,11 @@ export class AuthService {
                 const token = this.createToken(user._id, 'access');
                 const refreshToken = this.createToken(user._id, 'refresh');
                 const cookie = this.createCookie(refreshToken);
+                const userData = {name: user.name, email: user.email}
                 return {
                     cookie,
                     token,
+                    user: userData
                 };
             } else {
                 throw new HttpException(400, 'Invalid password');
@@ -62,11 +64,13 @@ export class AuthService {
     }
 
     private createToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): TokenData {
-        const expiresIn = tokenType === 'access' ? 600 : 3600; // 10 min
+        const date = new Date();
+        const expiresIn = tokenType === 'access' ? 600 : 3600;
+        const accessTokenExpiresIn = date.setSeconds(date.getSeconds() + 600);
         const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
 
         return {
-            expiresIn,
+            expiresIn: tokenType === 'access' ? accessTokenExpiresIn : undefined,
             token: jwt.sign({ _id: userId }, secret, { expiresIn }),
         };
     }
