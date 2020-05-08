@@ -44,6 +44,7 @@ export function SignInUpForm({ isOpen, onDismiss, onSubmit, formType }: ISignInU
                         onChangeHandler={handleChangeField}
                         value={name}
                         style={{ margin: '1rem 0' }}
+                        autoComplete="username"
                     />
                 )}
                 <Input
@@ -52,13 +53,14 @@ export function SignInUpForm({ isOpen, onDismiss, onSubmit, formType }: ISignInU
                     onChangeHandler={handleChangeField}
                     value={email}
                     style={{ margin: '1rem 0' }}
+                    autoComplete="email"
                 />
                 <Input
                     type="password"
                     name="password"
                     onChangeHandler={handleChangeField}
                     value={password}
-                    autoComplete="current-password"
+                    autoComplete={formType === 'login' ? 'current-password' : 'new-password'}
                 />
                 <Button type="submit" variant="primary" css={{ marginTop: 10 }}>
                     Sign In

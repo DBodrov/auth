@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useLayoutEffect, useMemo } from 'react';
 import { useAuthClient } from './use-authClient';
-import { TokenData, IAuthContext } from './types';
+import { IAuthContext } from './types';
 
 const AuthContext = createContext<IAuthContext>(undefined);
 
@@ -9,25 +9,22 @@ export function AuthProvider(props: any) {
         run,
         login,
         register,
-        data,
+        token,
         error,
         isError,
         isIdle,
         isLoading,
         isSuccess,
         isUnAuthenticated,
-        tokenIsValid,
     } = useAuthClient();
 
-    const tokenData: TokenData = data?.token;
-
     useLayoutEffect(() => {
-        if (!tokenData) {
+        if (!token) {
             run();
         }
-    }, [run, tokenData]);
+    }, [run, token]);
 
-    const value = useMemo(() => ({ ...data, tokenIsValid, login, register }), [data, login, register, tokenIsValid]);
+    const value = useMemo(() => ({ token, login, register }), [login, register, token]);
 
     if (isIdle || isLoading) {
         return <span>Loading...</span>;

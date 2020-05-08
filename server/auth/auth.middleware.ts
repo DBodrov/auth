@@ -6,15 +6,14 @@ import { JWT_SECRET } from '../util/secrets';
 
 export async function authMiddleware(request: Request, response: Response, next: NextFunction) {
     // console.log(request['cookies'], request['headers']);
+
     try {
         const token = request['headers']?.authorization;
-        console.log('token', token)
         if (!token) {
             throw new HttpException(401, 'You are not authenticate');
         }
 
         const decoded = jwt.verify(token, JWT_SECRET);
-        console.log(decoded);
 
         const user: IUser = await UserModel.findOne({ _id: (decoded as any)._id });
 
@@ -27,6 +26,12 @@ export async function authMiddleware(request: Request, response: Response, next:
         next();
 
     } catch (error) {
-        next(error);
+        let exception: any;
+        if (error instanceof jwt.TokenExpiredError) {
+            exception = new HttpException(403, error.message);
+        } else {
+            exception = error;
+        }
+        next(exception);
     }
 }

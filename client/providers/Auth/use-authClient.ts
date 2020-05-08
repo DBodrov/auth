@@ -1,6 +1,6 @@
 import { useReducer, useCallback } from 'react';
 import { useFetch } from 'utils';
-import { TokenData, LoginData, RegistrationData } from './types';
+import { LoginData, RegistrationData } from './types';
 
 const AUTH_API = '/api/auth';
 
@@ -11,15 +11,15 @@ type AuthState = {
     error?: any;
 };
 
-const tokenValidation = (tokenData: TokenData): boolean => {
-    if (tokenData) {
-        const now = new Date();
-        const tokenExpires = tokenData.expiresIn;
-        console.log('Date now =', now, 'Token expiration = ', new Date(tokenExpires));
-        return now.valueOf() < tokenExpires;
-    }
-    return false;
-};
+// const tokenValidation = (tokenData: TokenData): boolean => {
+//     if (tokenData) {
+//         const now = new Date();
+//         const tokenExpires = tokenData.expiresIn;
+//         console.log('Date now =', now, 'Token expiration = ', new Date(tokenExpires));
+//         return now.valueOf() < tokenExpires;
+//     }
+//     return false;
+// };
 
 export function useAuthClient() {
     const fetchClient = useFetch();
@@ -83,9 +83,8 @@ export function useAuthClient() {
         run,
         login,
         register,
-        data,
+        token: data?.token,
         error,
-        tokenIsValid: tokenValidation(data?.tokenData),
 
         isIdle: status === 'idle',
         isLoading: status === 'pending',
