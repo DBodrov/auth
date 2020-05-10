@@ -12,7 +12,7 @@ const initState: UserProfileState = {
 
 export function useProfileClient() {
     const fetchClient = useFetch();
-    const { tokenData } = useAuth();
+    const { token } = useAuth();
     const [{ status, data, error }, setState] = useReducer<React.Reducer<UserProfileState, UserProfileState>>(
         (s, a) => ({ ...s, ...a }),
         initState
@@ -21,7 +21,7 @@ export function useProfileClient() {
     const getUserProfile = useCallback(() => {
         setState({ status: 'pending' });
         const headers = {
-            Authorization: tokenData?.token ? tokenData.token : undefined,
+            Authorization: token ? token : undefined,
         };
 
         fetchClient(`${AUTH_API}/users/me`, { headers }).then(
@@ -36,7 +36,7 @@ export function useProfileClient() {
                 return error;
             }
         );
-    }, [fetchClient, tokenData]);
+    }, [fetchClient, token]);
 
     return {
         isIdle: status === 'idle',

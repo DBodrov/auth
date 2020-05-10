@@ -5,11 +5,11 @@ const AuthenticatedApp = React.lazy(() => import(/* webpackPrefetch: true */ './
 const UnauthenticatedApp = React.lazy(() => import('./UnAuthenticatedApp'));
 
 export function App() {
-    const { tokenIsValid } = useAuth();
+    const { tokenIsValid, token } = useAuth();
 
     return (
         <React.Suspense fallback={<h3>Loading lazy...</h3>}>
-            {tokenIsValid ? <AuthenticatedApp /> : <UnauthenticatedApp />}
+            {token ? <AuthenticatedApp /> : <UnauthenticatedApp />}
         </React.Suspense>
     );
 }

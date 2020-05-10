@@ -15,9 +15,9 @@ export class AuthRoutes {
     createAuthRoutes(): void {
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authController.signIn);
+        this.router.get('/token', this.authController.getAccessToken)
         this.router.get('/users/me', authMiddleware, async (req, res) => {
             res.send(req['user']);
         });
-        this.router.get('/token', this.authController.getAccessToken)
     }
 }

@@ -11,7 +11,7 @@ export class AuthController {
             response.setHeader('Set-Cookie', [cookie]);
             response.status(200).send({tokenData: token});
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             next(error);
         }
     };
@@ -19,12 +19,12 @@ export class AuthController {
     public async signIn(request: Request, response: Response, next: NextFunction) {
         try {
             const loginData: LoginData = request['body'];
-            const {cookie, token} = await new AuthService().signIn(loginData);
-            console.log('cookie', cookie);
+            const {cookie, accessToken} = await new AuthService().signIn(loginData);
+            // console.log('cookie', cookie);
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({tokenData: token});
+            response.status(200).send({token: accessToken});
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             next(error);
         }
     }
@@ -35,8 +35,8 @@ export class AuthController {
             if (!refreshToken) {
                 throw new HttpException(401, 'Please authenticate');
             }
-            const token = new AuthService().getAccessToken(refreshToken);
-            response.status(200).send({tokenData: token});
+            const token = new AuthService().createAccessToken(refreshToken);
+            response.status(200).send({token});
         } catch (error) {
             next(error);
         }

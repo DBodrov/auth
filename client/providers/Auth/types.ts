@@ -1,8 +1,3 @@
-export type TokenData = {
-    token: string;
-    expiresIn: number;
-};
-
 export type UserData = {
     name: string;
     email: string;
@@ -16,7 +11,7 @@ export type LoginData = {
 export type RegistrationData = UserData & LoginData;
 
 export interface IAuthContext {
-    tokenData: TokenData;
+    token: string;
     tokenIsValid: boolean;
     userData: UserData;
     login: (loginData: LoginData) => void;

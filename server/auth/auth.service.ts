@@ -1,13 +1,13 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserModel, IUser } from '../models';
-import {JWT_REFRESH_SECRET, JWT_SECRET} from '../util/secrets';
+import { UserModel, IUser, RoleModel } from '../user';
+import { JWT_REFRESH_SECRET, JWT_SECRET } from '../util/secrets';
 import { HttpException } from '../exceptions/HttpException';
 import { decodeToken } from './auth.utils';
 
 interface TokenData {
     token: string;
-    expiresIn: number;
+    // expiresIn: number;
 }
 
 export type UserData = Pick<IUser, 'name' | 'email' | 'password'>;
@@ -16,17 +16,20 @@ export type LoginData = Omit<UserData, 'name'>;
 export class AuthService {
     public async register(userData: UserData) {
         const currentUser = await UserModel.findOne({ email: userData.email });
+        const defaultRole = await RoleModel.findOne({ role: 'user' });
+        console.log(defaultRole);
         if (currentUser) {
             throw new HttpException(400, `${userData.email} already used...`, '/login');
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const user = await UserModel.create({
             ...userData,
+            role: defaultRole._id,
             password: hashedPassword,
         });
 
-        const token = this.createToken(user._id, 'access');
-        const refreshToken = this.createToken(user._id, 'refresh');
+        const token = this.generateToken(user._id, 'access');
+        const refreshToken = this.generateToken(user._id, 'refresh');
         const cookie = this.createCookie(refreshToken);
         return {
             cookie,
@@ -39,12 +42,14 @@ export class AuthService {
         if (user) {
             const isSamePassword = await bcrypt.compare(loginData.password, user.get('password'));
             if (isSamePassword) {
-                const token = this.createToken(user._id, 'access');
-                const refreshToken = this.createToken(user._id, 'refresh');
+                const accessToken = this.generateToken(user._id, 'access');
+                const refreshToken = this.generateToken(user._id, 'refresh');
+                // console.log('refresh token', refreshToken);
                 const cookie = this.createCookie(refreshToken);
+                await UserModel.updateOne({ email: loginData.email }, { lastLogin: Date.now() });
                 return {
                     cookie,
-                    token,
+                    accessToken,
                 };
             } else {
                 throw new HttpException(400, 'Invalid password');
@@ -54,25 +59,23 @@ export class AuthService {
         }
     }
 
-    public getAccessToken(refreshToken: string) {
-        const decryptedValue = decodeToken(refreshToken);
-        const accessTokenData = this.createToken((decryptedValue as any)._id, 'access');
+    public createAccessToken(refreshToken: string) {
+        const decryptedUser = decodeToken(refreshToken);
+        const accessTokenData = this.generateToken((decryptedUser as any)._id, 'access');
         return accessTokenData;
     }
 
-    private createToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): TokenData {
-        const date = new Date();
-        const expiresIn = tokenType === 'access' ? 600 : 3600;
-        const accessTokenExpiresIn = date.setSeconds(date.getSeconds() + 600);
+    private generateToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): string {
+        // const date = new Date();
+        const expiresIn = tokenType === 'access' ? '30s' : '60s';
+        // const accessTokenExpiresIn = date.setSeconds(date.getSeconds() + 60);
+
         const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
 
-        return {
-            expiresIn: tokenType === 'access' ? accessTokenExpiresIn : undefined,
-            token: jwt.sign({ _id: userId }, secret, { expiresIn }),
-        };
+        return jwt.sign({ _id: userId }, secret, { expiresIn });
     }
 
-    private createCookie(tokenData: TokenData) {
-        return `Authorization=${tokenData.token}; HttpOnly; Max-Age=${tokenData.expiresIn}`;
+    private createCookie(token: string) {
+        return `Authorization=${token}; HttpOnly; Max-Age=60`;
     }
 }
