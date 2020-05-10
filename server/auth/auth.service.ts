@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserModel, IUser } from '../models';
+import { UserModel, IUser, RoleModel } from '../user';
 import { JWT_REFRESH_SECRET, JWT_SECRET } from '../util/secrets';
 import { HttpException } from '../exceptions/HttpException';
 import { decodeToken } from './auth.utils';
@@ -16,12 +16,15 @@ export type LoginData = Omit<UserData, 'name'>;
 export class AuthService {
     public async register(userData: UserData) {
         const currentUser = await UserModel.findOne({ email: userData.email });
+        const defaultRole = await RoleModel.findOne({ role: 'user' });
+        console.log(defaultRole);
         if (currentUser) {
             throw new HttpException(400, `${userData.email} already used...`, '/login');
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const user = await UserModel.create({
             ...userData,
+            role: defaultRole._id,
             password: hashedPassword,
         });
 
@@ -43,6 +46,7 @@ export class AuthService {
                 const refreshToken = this.generateToken(user._id, 'refresh');
                 // console.log('refresh token', refreshToken);
                 const cookie = this.createCookie(refreshToken);
+                await UserModel.updateOne({ email: loginData.email }, { lastLogin: Date.now() });
                 return {
                     cookie,
                     accessToken,

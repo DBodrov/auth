@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { IUser, UserModel } from '../models';
+import { IUser, UserModel } from '../user';
 import { HttpException } from '../exceptions/HttpException';
 import { JWT_SECRET } from '../util/secrets';
 
