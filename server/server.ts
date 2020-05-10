@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { AuthRoutes } from './auth/auth.routes';
-import { errorMiddleware } from './middleware/error.middleware';
+import { errorMiddleware } from './exceptions';
 import {DbConnection} from './db';
 
 class Server {

@@ -17,7 +17,6 @@ export class AuthService {
     public async register(userData: UserData) {
         const currentUser = await UserModel.findOne({ email: userData.email });
         const defaultRole = await RoleModel.findOne({ role: 'user' });
-        console.log(defaultRole);
         if (currentUser) {
             throw new HttpException(400, `${userData.email} already used...`, '/login');
         }
@@ -67,7 +66,7 @@ export class AuthService {
 
     private generateToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): string {
         // const date = new Date();
-        const expiresIn = tokenType === 'access' ? '30s' : '60s';
+        const expiresIn = tokenType === 'access' ? '600s' : '1h';
         // const accessTokenExpiresIn = date.setSeconds(date.getSeconds() + 60);
 
         const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
