@@ -21,6 +21,7 @@ export class AuthController {
             const loginData: LoginData = request['body'];
             const {cookie, accessToken} = await new AuthService().signIn(loginData);
             // console.log('cookie', cookie);
+            //TODO: loggerService.login(loginData);
             response.setHeader('Set-Cookie', [cookie]);
             response.status(200).send({token: accessToken});
         } catch (error) {

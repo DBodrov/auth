@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { UserModel, IUser, RoleModel } from '../user';
+import { IUser, UserService } from '../user';
 import { JWT_REFRESH_SECRET, JWT_SECRET } from '../util/secrets';
 import { HttpException } from '../exceptions/HttpException';
 import { decodeToken } from './auth.utils';
@@ -14,16 +14,20 @@ export type UserData = Pick<IUser, 'name' | 'email' | 'password'>;
 export type LoginData = Omit<UserData, 'name'>;
 
 export class AuthService {
+    #userService: UserService;
+
+    constructor() {
+        this.#userService = new UserService();
+    }
     public async register(userData: UserData) {
-        const currentUser = await UserModel.findOne({ email: userData.email });
-        const defaultRole = await RoleModel.findOne({ role: 'user' });
-        if (currentUser) {
+        const existedUser = await new UserService().getUserByEmail(userData.email);
+        // const defaultRole = await RoleModel.findOne({ role: 'user' });
+        if (existedUser) {
             throw new HttpException(400, `${userData.email} already used...`, '/login');
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const user = await UserModel.create({
             ...userData,
-            role: defaultRole._id,
             password: hashedPassword,
         });
 
@@ -37,15 +41,15 @@ export class AuthService {
     }
 
     public async signIn(loginData: LoginData) {
-        const user = await UserModel.findOne({ email: loginData.email });
-        if (user) {
-            const isSamePassword = await bcrypt.compare(loginData.password, user.get('password'));
+        const userDb = await this.#userService.getUserByEmail(loginData.email);
+        const userExist = Boolean(userDb?._id);
+        if (userExist) {
+            const isSamePassword = await bcrypt.compare(loginData.password, userDb.password);
             if (isSamePassword) {
-                const accessToken = this.generateToken(user._id, 'access');
-                const refreshToken = this.generateToken(user._id, 'refresh');
-                // console.log('refresh token', refreshToken);
+                const accessToken = this.generateToken(userDb._id, 'access');
+                const refreshToken = this.generateToken(userDb._id, 'refresh');
                 const cookie = this.createCookie(refreshToken);
-                await UserModel.updateOne({ email: loginData.email }, { lastLogin: Date.now() });
+                // await UserModel.updateOne({ email: loginData.email }, { lastLogin: Date.now() });
                 return {
                     cookie,
                     accessToken,
