@@ -17,7 +17,7 @@ const UserSchema = new Schema({
     },
     profileId: {
         type: Schema.Types.ObjectId,
-        ref: 'Profile',
+        ref: 'UserProfile',
     },
 });
 
