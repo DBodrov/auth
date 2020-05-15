@@ -1,4 +1,5 @@
 import {HttpException} from '../exceptions';
+import {UserDb} from '../user';
 import {UserProfileModel} from './profile.model';
 import {RoleModel} from './role.model';
 import {IUserProfileModel, IRoleModel} from './types';
@@ -11,11 +12,11 @@ export class UserProfileService {
         this.#roleDb = RoleModel;
     }
 
-    public async createProfile(userId: string) {
+    public async createProfile(user: UserDb) {
         const defaultRole = await this.#roleDb.findOne({role: 'user'});
         const profile = await this.#profileDb.create({
-            userId,
-            roleId: defaultRole._id
+            user,
+            role: defaultRole
         });
         return profile;
     }

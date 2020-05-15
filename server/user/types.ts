@@ -7,7 +7,7 @@ export interface IUser {
     password?: string;
 }
 
-export type UserDb = IUser & Document;
+export type UserDb = IUser & {profileId: string} & Document;
 
 export interface IUserModel extends Model<UserDb> {}
 

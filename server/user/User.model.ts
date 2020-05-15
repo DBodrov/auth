@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose';
-import {IUser, IUserModel} from './types';
+import {IUserModel} from './types';
 
 const UserSchema = new Schema({
     name: {
@@ -15,20 +15,13 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
-    // roleId: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Role',
-    // },
-    // lastLogin: {
-    //     type: Number,
-    //     default: Date.now()
-    // }
-
+    profileId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Profile',
+    },
 });
 
 UserSchema.index({email: 1});
 UserSchema.index({name: 1});
-
-// UserSchema.loadClass(User);
 
 export const UserModel: IUserModel = model('User', UserSchema);

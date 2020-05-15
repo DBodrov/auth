@@ -6,10 +6,10 @@ export class AuthController {
     public register = async (request: Request, response: Response, next: NextFunction) => {
         try {
             const userData: UserData = request['body'];
-            const { cookie, token } = await new AuthService().register(userData);
+            const { cookie, accessToken } = await new AuthService().register(userData);
 
             response.setHeader('Set-Cookie', [cookie]);
-            response.status(200).send({tokenData: token});
+            response.status(200).send({token: accessToken});
         } catch (error) {
             // console.log(error);
             next(error);

@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { AuthRoutes } from './auth/auth.routes';
+import { UserRoutes } from './user/user.routes';
 import { errorMiddleware } from './exceptions';
 import {DbConnection} from './db';
 
@@ -32,6 +33,8 @@ class Server {
 
     public initRoutes(): void {
         this.app.use('/api/auth', new AuthRoutes().router);
+        this.app.use('/api/users', new UserRoutes().router);
+        // this.app.use('api/user-profile/', new )
     }
 
     private initErrorMiddleware(): void {
