@@ -1,6 +1,6 @@
 import { useCallback, useReducer } from 'react';
 import { useAuth } from 'providers/Auth';
-import { useFetch, AUTH_API } from 'utils';
+import { useFetch, USER_API } from 'utils';
 import { IHttpException } from '../../common.types';
 import { UserProfile, UserProfileState } from './types';
 
@@ -24,7 +24,7 @@ export function useProfileClient() {
             Authorization: token ? token : undefined,
         };
 
-        fetchClient(`${AUTH_API}/users/me`, { headers }).then(
+        fetchClient(`${USER_API}/me`, { headers }).then(
             (data: UserProfile) => {
                 console.log('user profile client ', data);
                 setState({ status: 'resolved', data });

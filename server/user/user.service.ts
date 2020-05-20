@@ -8,6 +8,7 @@ export class UserService {
     #profileService: UserProfileService;
 
     constructor() {
+        // console.log('User service ctor invoke')
         this.#profileService = new UserProfileService();
     }
 
