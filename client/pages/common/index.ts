@@ -26,3 +26,5 @@ export const Form = styled.form`
     border: 1px #abb4bd solid;
     padding: 0 0.5rem;
 `;
+
+export * from './PageLayout';

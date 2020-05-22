@@ -81,6 +81,6 @@ export class AuthService {
     }
 
     private createCookie(token: string) {
-        return `Authorization=${token}; HttpOnly; Max-Age=60`;
+        return `Authorization=${token}; HttpOnly; Max-Age=3600`;
     }
 }

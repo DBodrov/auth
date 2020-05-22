@@ -30,7 +30,7 @@ export function SignInUpForm({ isOpen, onDismiss, onSubmit, formType }: ISignInU
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = { name, email, password };
+        const formData = { name: formType === 'registration' ? name: undefined, email, password };
         onSubmit(formData, formType);
     };
     const handleDismissForm = () => onDismiss();

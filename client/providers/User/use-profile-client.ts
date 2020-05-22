@@ -17,7 +17,7 @@ export function useProfileClient() {
         (s, a) => ({ ...s, ...a }),
         initState
     );
-
+    //FIXME: getUser
     const getUserProfile = useCallback(() => {
         setState({ status: 'pending' });
         const headers = {

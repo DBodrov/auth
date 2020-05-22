@@ -17,9 +17,9 @@ export const globalStyles = css({
         width: '100vw',
         height: '100vh',
         overflow: 'hidden',
+        fontFamily: 'Roboto, sans-serif',
+        fontSize: '16px',
     },
     '*': { boxSizing: 'border-box' },
     '#root': { width: '100%', height: '100%' },
-    fontFamily: 'Roboto, sans-serif',
-    fontSize: '16px',
 });
