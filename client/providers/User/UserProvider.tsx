@@ -1,19 +1,19 @@
 import React, { useContext, createContext, useMemo, useLayoutEffect } from 'react';
 import { useProfileClient } from './use-profile-client';
-import { UserProfile, UserProfileContext } from './types';
+import { UserProfileContext } from './types';
 
 const UserContext = createContext<UserProfileContext>(undefined);
 
 export function UserProvider({ children }) {
-    const { data, error, getUserProfile, isError, isIdle, isLoading, isSuccess } = useProfileClient();
+    const { user, profile, error, getCurrentUser, getUserProfile, isError, isIdle, isLoading, isSuccess } = useProfileClient();
 
     useLayoutEffect(() => {
-        if (!data?.name) {
-            getUserProfile();
+        if (!user?.name) {
+            getCurrentUser();
         }
-    }, [data, getUserProfile]);
+    }, [user?.name, getCurrentUser]);
 
-    const value = useMemo(() => ({ ...data, getUserProfile }), [data, getUserProfile]);
+    const value = useMemo<UserProfileContext>(() => ({ user, profile, getCurrentUser, getUserProfile }), [getCurrentUser, getUserProfile, profile, user]);
 
     if (isIdle || isLoading) return <span>Loading profile...</span>;
 

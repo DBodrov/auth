@@ -1,7 +1,7 @@
 {
-    "name": "auth",
+    "name": "neu-app",
     "version": "0.0.1",
-    "description": "auth app",
+    "description": "playground app",
     "main": "index.js",
     "author": "d.bodrov",
     "license": "MIT",

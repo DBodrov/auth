@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import styled from '@emotion/styled';
 import { ITheme, Button } from 'neutrino-ui';
 import { useProfile } from 'providers/User';
@@ -11,7 +12,7 @@ const StyledNav = styled.nav`
     background-color: ${({ theme }: { theme: ITheme }) => theme.colors.mainColors.primaryDark};
 `;
 
-const LinkButton = styled.button`
+const ProfileLink = styled(Link)`
     display: inline;
     cursor: pointer;
     color: #fff;
@@ -22,17 +23,17 @@ const LinkButton = styled.button`
     border: 0;
     outline: 0;
     background-color: transparent;
+    align-self: center;
     margin-left: auto;
-
 `;
 
 export function Navbar() {
-    const { name, getUserProfile } = useProfile();
+    const { user, getCurrentUser } = useProfile();
     return (
         <StyledNav>
             <div>Page Name</div>
             <div css={{display: 'flex', paddingRight: '8px'}}>
-                <LinkButton>Hello, {name}</LinkButton>
+                <ProfileLink to="/profile">Hello, {user.name}</ProfileLink>
             </div>
         </StyledNav>
     );

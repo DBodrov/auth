@@ -84,6 +84,7 @@ export function useAuthClient() {
         login,
         register,
         token: data?.token,
+        expiresIn: data?.expiresIn,
         error,
 
         isIdle: status === 'idle',

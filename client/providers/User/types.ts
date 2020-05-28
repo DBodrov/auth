@@ -1,15 +1,29 @@
 import { IHttpException } from '../../common.types';
-export type UserProfile = {
+
+export interface IUser {
+    id: string;
     name: string;
     email: string;
+    profileId: string;
 };
 
+export interface IUserProfile {
+    id: string;
+    userId: string;
+    role: string;
+}
+
 export type UserProfileContext = {
-    getUserProfile: () => void;
-} & UserProfile;
+    getCurrentUser: () => void;
+    getUserProfile: (profileId: string) => void;
+    user?: IUser;
+    profile?: IUserProfile;
+}
+//& IUser & IUserProfile;
 
 export type UserProfileState = {
     status: 'idle' | 'pending' | 'resolved' | 'rejected';
-    data?: UserProfile;
+    user?: IUser;
+    profile?: IUserProfile;
     error?: IHttpException;
 };

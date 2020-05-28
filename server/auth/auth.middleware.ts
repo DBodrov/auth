@@ -3,14 +3,24 @@ import jwt from 'jsonwebtoken';
 import { HttpException } from '../exceptions/HttpException';
 import { JWT_SECRET } from '../util/secrets';
 
+function checkAccessTokenExpiration(token: any) {
+    console.log('=== decoded token ===', token);
+    const tokenExp = new Date(token.exp);
+    console.log('== token exp ===', tokenExp)
+}
+
 export async function authMiddleware(request: Request, response: Response, next: NextFunction) {
     try {
         const token = request['headers']?.authorization;
-        if (!token) {
+        const refreshToken = request['cookies']?.Authorization;
+
+        if (!token || !refreshToken) {
             throw new HttpException(401, 'You are not authenticate');
         }
 
         const decoded = jwt.verify(token, JWT_SECRET);
+        checkAccessTokenExpiration(decoded);
+
 
         const userId: string = (decoded as any)._id;
 

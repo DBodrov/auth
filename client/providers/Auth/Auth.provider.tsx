@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useLayoutEffect, useMemo } from 'react';
+import React, { createContext, useContext, useLayoutEffect, useMemo, useCallback } from 'react';
 import { useAuthClient } from './use-authClient';
 import { IAuthContext } from './types';
 
@@ -10,6 +10,7 @@ export function AuthProvider(props: any) {
         login,
         register,
         token,
+        expiresIn,
         error,
         isError,
         isIdle,
@@ -19,18 +20,29 @@ export function AuthProvider(props: any) {
     } = useAuthClient();
 
     useLayoutEffect(() => {
+        const startSilentRefresh = () => {
+
+        }
         if (!token) {
             run();
+        } else {
+            const expiredDate = new Date(expiresIn).toLocaleString();
+            console.log(expiredDate);
         }
+
     }, [run, token]);
 
-    const value = useMemo(() => ({ token, login, register }), [login, register, token]);
+    const updateAccessToken = useCallback(() => {
+        run()
+    }, [run])
+
+    const value = useMemo(() => ({ token, login, register, updateAccessToken }), [login, register, token, updateAccessToken]);
 
     if (isIdle || isLoading) {
         return <span>Loading...</span>;
     }
 
-    if (isSuccess || isUnAuthenticated) return <AuthContext.Provider value={value} {...props} />;
+    if (isSuccess  || isUnAuthenticated) return <AuthContext.Provider value={value} {...props} />;
 
     if (isError) return <div>{error.message}</div>;
 }

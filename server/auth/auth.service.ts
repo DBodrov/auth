@@ -26,19 +26,19 @@ export class AuthService {
         const existedUser = await this.#userService.emailIsExist(userData.email);
         // const defaultRole = await RoleModel.findOne({ role: 'user' });
         if (existedUser) {
-            throw new HttpException(400, `${userData.email} already used...`, '/login');
+            throw new HttpException(400, `${userData.email} already used...`);
         }
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         const user = await this.#userService.createUser({
             ...userData,
             password: hashedPassword,
         });
-        const accessToken = this.generateToken(user._id, 'access');
-        const refreshToken = this.generateToken(user._id, 'refresh');
-        const cookie = this.createCookie(refreshToken);
+        const accessTokenData = this.generateToken(user._id, 'access');
+        const refreshTokenData = this.generateToken(user._id, 'refresh');
+        const cookie = this.createCookie(refreshTokenData.token);
         return {
             cookie,
-            accessToken,
+            accessTokenData,
         };
     }
 
@@ -48,13 +48,13 @@ export class AuthService {
         if (userExist) {
             const isSamePassword = await bcrypt.compare(loginData.password, userDb.password);
             if (isSamePassword) {
-                const accessToken = this.generateToken(userDb._id, 'access');
-                const refreshToken = this.generateToken(userDb._id, 'refresh');
-                const cookie = this.createCookie(refreshToken);
+                const accessTokenData = this.generateToken(userDb._id, 'access');
+                const refreshTokenData = this.generateToken(userDb._id, 'refresh');
+                const cookie = this.createCookie(refreshTokenData.token);
                 // await UserModel.updateOne({ email: loginData.email }, { lastLogin: Date.now() });
                 return {
                     cookie,
-                    accessToken,
+                    accessTokenData,
                 };
             } else {
                 throw new HttpException(400, 'Invalid password');
@@ -64,23 +64,38 @@ export class AuthService {
         }
     }
 
-    public createAccessToken(refreshToken: string) {
-        const decryptedUser = decodeToken(refreshToken);
-        const accessTokenData = this.generateToken((decryptedUser as any)._id, 'access');
-        return accessTokenData;
+    public async createTokensData(refreshToken: string) {
+        try {
+            const decryptedUser = decodeToken(refreshToken);
+            const userDb = await this.#userService.getUserById((decryptedUser as any)._id);
+            if (!Boolean(userDb._id)) {
+                throw new HttpException(401, 'You are not authenticate');
+            }
+            const accessTokenData = this.generateToken(userDb._id, 'access');
+            const refreshTokenData = this.generateToken(userDb._id, 'refresh');
+            const cookie = this.createCookie(refreshTokenData.token);
+            return { accessTokenData, cookie };
+        } catch (error) {
+            throw new HttpException(401, 'Please authenticate');
+        }
     }
 
-    private generateToken(userId: IUser['_id'], tokenType: 'access' | 'refresh'): string {
+    private generateToken(userId: IUser['_id'], tokenType: 'access' | 'refresh') {
         // const date = new Date();
-        const expiresIn = tokenType === 'access' ? '600s' : '1h';
+        const expiresIn = tokenType === 'access' ? 60 : '1h';
         // const accessTokenExpiresIn = date.setSeconds(date.getSeconds() + 60);
 
         const secret = tokenType === 'access' ? JWT_SECRET : JWT_REFRESH_SECRET;
-
-        return jwt.sign({ _id: userId }, secret, { expiresIn });
+        const date = new Date();
+        const expiresStamp = tokenType === 'access' ? date.setMinutes(date.getMinutes() + 1) : void 0;
+        const token = jwt.sign({ _id: userId }, secret, { expiresIn });
+        return {
+            token,
+            expiresIn: expiresStamp,
+        };
     }
 
     private createCookie(token: string) {
-        return `Authorization=${token}; HttpOnly; Max-Age=3600`;
+        return `Authorization=${token}; HttpOnly; Path=/; Max-Age=3600`;
     }
 }

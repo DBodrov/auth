@@ -34,6 +34,7 @@ class Server {
     public initRoutes(): void {
         this.app.use('/api/auth', new AuthRoutes().router);
         this.app.use('/api/users', new UserRoutes().router);
+        // this.app.use('/api/user-profile')
         // this.app.use('api/user-profile/', new )
     }
 

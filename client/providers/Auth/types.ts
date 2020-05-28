@@ -16,4 +16,5 @@ export interface IAuthContext {
     userData: UserData;
     login: (loginData: LoginData) => void;
     register: (registrationData: RegistrationData) => void;
+    updateAccessToken: () => void;
 }

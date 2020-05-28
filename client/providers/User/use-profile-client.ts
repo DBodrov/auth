@@ -2,41 +2,70 @@ import { useCallback, useReducer } from 'react';
 import { useAuth } from 'providers/Auth';
 import { useFetch, USER_API } from 'utils';
 import { IHttpException } from '../../common.types';
-import { UserProfile, UserProfileState } from './types';
+import { IUser, IUserProfile, UserProfileState } from './types';
 
 const initState: UserProfileState = {
     status: 'idle',
-    data: null,
+    user: null,
+    profile: null,
     error: null,
 };
 
 export function useProfileClient() {
     const fetchClient = useFetch();
-    const { token } = useAuth();
-    const [{ status, data, error }, setState] = useReducer<React.Reducer<UserProfileState, UserProfileState>>(
-        (s, a) => ({ ...s, ...a }),
-        initState
+    const { token, updateAccessToken } = useAuth();
+    const [{ status, user, profile, error }, setState] = useReducer<
+        React.Reducer<UserProfileState, UserProfileState>
+    >((s, a) => ({ ...s, ...a }), initState);
+
+    const errorHandler = useCallback(
+        (error: IHttpException) => {
+            console.log('user error', error);
+            if (error.status === 403 && error.message === 'jwt expired') {
+                updateAccessToken();
+                return error;
+            }
+            setState({ status: 'rejected', error });
+            return error;
+        },
+        [updateAccessToken]
     );
-    //FIXME: getUser
-    const getUserProfile = useCallback(() => {
+
+    const getCurrentUser = useCallback(() => {
         setState({ status: 'pending' });
         const headers = {
             Authorization: token ? token : undefined,
         };
 
         fetchClient(`${USER_API}/me`, { headers }).then(
-            (data: UserProfile) => {
-                console.log('user profile client ', data);
-                setState({ status: 'resolved', data });
+            (data: any) => {
+                console.log('user client ', data);
+                const userData = { ...data, id: (data as any)._id };
+                const { _id, ...user } = userData;
+                setState({ status: 'resolved', user: { ...user } });
                 return data;
             },
-            (error: IHttpException) => {
-                console.log('user profile client error', error);
-                setState({ status: 'rejected', error });
-                return error;
-            }
+            (error: IHttpException) => errorHandler(error)
         );
-    }, [fetchClient, token]);
+    }, [errorHandler, fetchClient, token]);
+
+    const getUserProfile = useCallback(
+        (profileId: string) => {
+            setState({ status: 'pending' });
+            const headers = {
+                Authorization: token ? token : undefined,
+            };
+            fetchClient(`${USER_API}/profile/${profileId}`, { headers }).then(
+                (data: IUserProfile) => {
+                    console.log('profile data', data);
+                    setState({ status: 'resolved', profile: { ...data } });
+                    return data;
+                },
+                (error: IHttpException) => errorHandler(error)
+            );
+        },
+        [errorHandler, fetchClient, token]
+    );
 
     return {
         isIdle: status === 'idle',
@@ -44,8 +73,10 @@ export function useProfileClient() {
         isSuccess: status === 'resolved',
         isError: status === 'rejected',
 
-        data,
+        user,
+        profile,
         error,
+        getCurrentUser,
         getUserProfile,
     };
 }
