@@ -15,6 +15,6 @@ export interface IAuthContext {
     tokenIsValid: boolean;
     userData: UserData;
     login: (loginData: LoginData) => void;
+    logout: () => void;
     register: (registrationData: RegistrationData) => void;
-    updateAccessToken: () => void;
 }

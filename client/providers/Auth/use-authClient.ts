@@ -43,6 +43,21 @@ export function useAuthClient() {
         );
     }, [fetchClient]);
 
+    const silentRefreshToken = useCallback(() => {
+        fetchClient(`${AUTH_API}/token`).then(
+            (data) => {
+                dispatch({ status: 'resolved', data });
+                console.log('fetch', data);
+                return data;
+            },
+            (error) => {
+                console.log('silent fetch error', error);
+                dispatch({ status: 'rejected', error });
+                return error;
+            }
+        );
+    }, [fetchClient]);
+
     const login = useCallback(
         (loginData: LoginData) => {
             dispatch({ status: 'pending' });
@@ -60,6 +75,11 @@ export function useAuthClient() {
         },
         [fetchClient]
     );
+
+    const logout = useCallback(() => {
+        //TODO: on back-end
+        dispatch({status: 'resolved', data: {token: null, expiresIn: undefined}});
+    }, []);
 
     const register = useCallback(
         (registrationData: RegistrationData) => {
@@ -81,10 +101,11 @@ export function useAuthClient() {
 
     return {
         run,
+        silentRefreshToken,
         login,
+        logout,
         register,
-        token: data?.token,
-        expiresIn: data?.expiresIn,
+        data,
         error,
 
         isIdle: status === 'idle',
