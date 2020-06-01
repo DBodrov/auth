@@ -16,5 +16,6 @@ export class AuthRoutes {
         this.router.post('/register', this.authController.register);
         this.router.post('/login', this.authController.signIn);
         this.router.get('/token', this.authController.getAccessToken)
+        this.router.post('/logout', this.authController.clearRefreshToken)
     }
 }

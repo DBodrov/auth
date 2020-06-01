@@ -78,8 +78,17 @@ export function useAuthClient() {
 
     const logout = useCallback(() => {
         //TODO: on back-end
-        dispatch({status: 'resolved', data: {token: null, expiresIn: undefined}});
-    }, []);
+        fetchClient(`${AUTH_API}/logout`, {body: {}}).then(
+            (data) => {
+                dispatch({status: 'resolved', data});
+                return data;
+            },
+            (error) => {
+                dispatch({status: 'rejected', error});
+                return error;
+            }
+        )
+    }, [fetchClient]);
 
     const register = useCallback(
         (registrationData: RegistrationData) => {

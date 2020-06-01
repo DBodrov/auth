@@ -38,9 +38,18 @@ export class AuthController {
             }
             const { accessTokenData, cookie } = await new AuthService().createTokensData(refreshToken);
             response.setHeader('Set-Cookie', [cookie]);
-            response
-                .status(200)
-                .send({ ...accessTokenData });
+            response.status(200).send({ ...accessTokenData });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    public clearRefreshToken = (request: Request, response: Response, next: NextFunction) => {
+        try {
+            const refreshToken = request['cookies']?.Authorization;
+            const authCookie = `Authorization=${refreshToken}; HttpOnly; Path=/; Max-Age=0`;
+            response.setHeader('Set-Cookie', [authCookie]);
+            response.status(200).send({ token: null, expiresIn: null });
         } catch (error) {
             next(error);
         }
