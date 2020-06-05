@@ -1,4 +1,4 @@
-import React, { useContext, createContext, useMemo, useEffect, useState, useRef } from 'react';
+import React, { useContext, createContext, useMemo, useEffect } from 'react';
 import {useAuth} from '../Auth';
 import { useProfileClient } from './use-profile-client';
 import { UserProfileContext } from './types';
