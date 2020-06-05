@@ -1,6 +1,6 @@
-import { UserModel } from './user.model';
 import { HttpException } from '../exceptions';
 import {UserProfileService} from '../profile';
+import { UserModel } from './user.models';
 import { UserDb, IUser } from './types';
 
 export class UserService {
