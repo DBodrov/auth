@@ -3,5 +3,5 @@
     "ext": "ts",
     "ignore": [".git", "node_modules/**/node_modules"],
     "verbose": true,
-    "exec": "ts-node ./server/server.ts"
+    "exec": "ts-node ./server/index.ts"
 }

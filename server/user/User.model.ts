@@ -1,13 +1,5 @@
-import { Document, Model, model, Schema } from 'mongoose';
-// import {User} from './User';
-
-export interface IUser extends Document {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-    lastLogin: number;
-}
+import { model, Schema } from 'mongoose';
+import {IUserModel} from './types';
 
 const UserSchema = new Schema({
     name: {
@@ -23,20 +15,13 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
-    role: {
+    profileId: {
         type: Schema.Types.ObjectId,
-        ref: 'Role',
+        ref: 'UserProfile',
     },
-    lastLogin: {
-        type: Number,
-        default: Date.now()
-    }
-
 });
 
 UserSchema.index({email: 1});
 UserSchema.index({name: 1});
 
-// UserSchema.loadClass(User);
-
-export const UserModel: Model<IUser> = model<IUser>('User', UserSchema);
+export const UserModel: IUserModel = model('User', UserSchema);

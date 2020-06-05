@@ -1,2 +1,5 @@
-export * from './Role.model';
-export * from './User.model';
+export * from './user.model';
+export * from './user.routes';
+export * from './user.controller';
+export * from './user.service';
+export * from './types';

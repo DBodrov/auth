@@ -2,7 +2,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import serverless from 'serverless-http';
 import { AuthRoutes } from './auth/auth.routes';
+import { UserRoutes } from './user/user.routes';
 import { errorMiddleware } from './exceptions';
 import {DbConnection} from './db';
 
@@ -32,6 +34,9 @@ class Server {
 
     public initRoutes(): void {
         this.app.use('/api/auth', new AuthRoutes().router);
+        this.app.use('/api/users', new UserRoutes().router);
+        // this.app.use('/api/user-profile')
+        // this.app.use('api/user-profile/', new )
     }
 
     private initErrorMiddleware(): void {
@@ -43,8 +48,9 @@ class Server {
         this.#db.connect();
         this.app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
     }
+
+    public
 }
 
-const server = new Server();
-
-server.start();
+export const server = new Server();
+module.exports.handler = serverless(server.app);
