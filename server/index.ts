@@ -1,3 +1,4 @@
+import serverless from 'serverless-http';
 import {server} from './server';
 
-server.start();
+module.exports.handler = serverless(server.app);
