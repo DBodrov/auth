@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "CommonJS",
+        "lib": ["ESNext"],
+        "skipLibCheck": true,
+        "outDir": "functions",
+        "moduleResolution": "node",
+        "baseUrl": ".",
+        "paths": {
+            "server/*": ["server/*"]
+        },
+        "typeRoots": ["node_modules/@types", "typings.d.ts"],
+        "esModuleInterop": true,
+        "experimentalDecorators": true
+    },
+    "include": ["server/**/*"],
+    "exclude": ["node_modules", "client/**/*", "**/*.spec.tsx", "__tests__"]
+}

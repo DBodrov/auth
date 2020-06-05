@@ -1,7 +1,8 @@
 .DS_Store
 .vscode
 node_modules/
-lib
+dist
+functions
 yarn-error.log
 tsconfig.tsbuildinfo
 docs

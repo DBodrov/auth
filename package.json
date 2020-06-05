@@ -9,7 +9,10 @@
     "scripts": {
         "dev-server": "nodemon",
         "dev": "webpack-dev-server --inline --color --hot",
-        "dev:all": "concurrently \"yarn dev-server\" \"yarn dev\""
+        "dev:all": "concurrently \"yarn dev-server\" \"yarn dev\"",
+        "build:server": "tsc -p tsconfig.server.json",
+        "build:client": "webpack --config config/webpack.config.prod.js",
+        "build": "yarn build:server && yarn build:client"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
